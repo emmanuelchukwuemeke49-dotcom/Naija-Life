@@ -756,6 +756,7 @@ const chatButton = document.createElement("button");
 chatButton.textContent = "💬 Chat";
 
 chatButton.onclick = function() {
+alert("Chat button is working!");
   document.getElementById("messageFriendId").value = friendId;
   document.getElementById("privateChat").scrollIntoView({
     behavior: "smooth"
