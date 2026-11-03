@@ -96,6 +96,89 @@ footer{text-align:center;color:#87988e;padding:20px;font-size:12px}
 
 
 <script>
+
+const supabaseClient = window.supabase.createClient(
+  "https://dldonxcyaqhenbltticc.supabase.co",
+  "YOUR_SUPABASE_PUBLISHABLE_KEY"
+);
+
+async function registerPlayer() {
+  const name = document.getElementById("authName").value.trim();
+  const email = document.getElementById("authEmail").value.trim();
+  const password = document.getElementById("authPassword").value;
+
+  const message = document.getElementById("authMessage");
+
+  if (!name || !email || password.length < 6) {
+    message.textContent = "Enter your name, email and a password of at least 6 characters.";
+    return;
+  }
+
+  message.textContent = "Creating your account...";
+
+  const { data, error } = await supabaseClient.auth.signUp({
+    email: email,
+    password: password,
+    options: {
+      data: { display_name: name }
+    }
+  });
+
+  if (error) {
+    message.textContent = error.message;
+    return;
+  }
+
+  message.textContent = data.session
+    ? "Account created! You can now log in."
+    : "Account created! Check your email to confirm your account.";
+}
+
+async function loginPlayer() {
+  const email = document.getElementById("authEmail").value.trim();
+  const password = document.getElementById("authPassword").value;
+  const message = document.getElementById("authMessage");
+
+  message.textContent = "Logging in...";
+
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email: email,
+    password: password
+  });
+
+  if (error) {
+    message.textContent = error.message;
+    return;
+  }
+
+  const { data: profile, error: profileError } =
+    await supabaseClient
+      .from("profiles")
+      .select("*")
+      .eq("id", data.user.id)
+      .single();
+
+  if (profileError) {
+    message.textContent = "Login worked, but player profile could not load: " + profileError.message;
+    return;
+  }
+
+  player = profile.display_name;
+  city = profile.city;
+  cash = profile.cash;
+  energy = profile.energy;
+  rep = profile.reputation;
+  day = profile.day;
+
+  document.getElementById("authPanel").style.display = "none";
+  document.getElementById("game").style.display = "block";
+  document.getElementById("welcome").textContent = "Welcome back, " + player + "!";
+  document.getElementById("location").textContent = city + ", Nigeria";
+
+  update();
+  message.textContent = "Welcome back!";
+}
+
 let player = "";
 let cash = 20000;
 let energy = 100;
