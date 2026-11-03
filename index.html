@@ -391,7 +391,50 @@ footer {
 
     <p id="crimeStatus" class="muted" aria-live="polite"></p>
   </section>
+<!-- MISSIONS -->
 
+<section class="card" id="missionsSection">
+  <h2>🎯 Missions & Daily Challenges</h2>
+  <p class="section-note">Complete challenges, earn cash, XP and reputation.</p>
+  <button onclick="loadMissions()">🔄 Refresh Missions</button>
+  <div id="missionsList">Loading missions...</div>
+  <p id="missionStatus" class="muted"></p>
+</section>
+
+<!-- ACHIEVEMENTS AND LEVELS -->
+
+<section class="card" id="achievementsSection">
+  <h2>🏆 Achievements & Levels</h2>
+  <div class="status-panel">
+    <p class="muted">Your progress</p>
+    <strong id="levelSummary">Level 1</strong>
+    <p id="xpSummary" class="muted">0 XP</p>
+  </div>
+  <div id="achievementsList">Loading achievements...</div>
+</section>
+
+<!-- CITY TRAVEL -->
+
+<section class="card" id="travelSection">
+  <h2>🗺️ Travel Across Nigeria</h2>
+  <p class="section-note">Visit other cities and explore life across Nigeria.</p>
+  <p id="travelCurrentCity" class="muted">Current city: Lagos</p>
+  <div id="cityTravelList">Loading destinations...</div>
+  <p id="travelStatus" class="muted"></p>
+</section>
+
+<!-- LEADERBOARDS -->
+
+<section class="card" id="leaderboardSection">
+  <h2>🥇 Naija Life Leaderboards</h2>
+  <select id="leaderboardType" onchange="loadLeaderboard()">
+    <option value="wealth">💰 Richest Players</option>
+    <option value="xp">✨ Highest XP</option>
+    <option value="reputation">⭐ Highest Reputation</option>
+    <option value="businesses">🏪 Most Businesses</option>
+  </select>
+  <div id="leaderboardList">Loading rankings...</div>
+</section>
   <!-- LIFE ACTIVITIES -->
 
   <section class="card">
