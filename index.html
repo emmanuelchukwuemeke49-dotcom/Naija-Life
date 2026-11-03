@@ -751,8 +751,20 @@ async function loadFriends() {
     const cityText = document.createElement("p");
     cityText.textContent = "📍 " + friend.city + ", Nigeria";
 
-    card.append(name, cityText);
-    list.appendChild(card);
+    
+const chatButton = document.createElement("button");
+chatButton.textContent = "💬 Chat";
+
+chatButton.onclick = function() {
+  document.getElementById("messageFriendId").value = friendId;
+  document.getElementById("privateChat").scrollIntoView({
+    behavior: "smooth"
+  });
+  loadPrivateMessages();
+};
+
+card.append(name, cityText, chatButton);
+list.appendChild(card);
   }
 }
 
