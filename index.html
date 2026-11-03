@@ -250,10 +250,36 @@ function update() {
   document.getElementById("day").textContent = day;
 }
 
-function work() {
-  if (energy < 20) return say("You're too tired to work. Get some rest!");
-  cash += 8000;
-  energy -= 20;
+
+async function work() {
+  say("Processing your work...");
+
+  const { error } = await supabaseClient.rpc(
+    "perform_game_action",
+    { action_name: "work" }
+  );
+
+  if (error) {
+    say(error.message);
+    return;
+  }
+
+  const { data: profile, error: profileError } = await supabaseClient
+    .from("profiles")
+    .select("*")
+    .eq("id", (await supabaseClient.auth.getUser()).data.user.id)
+    .single();
+
+  if (profileError) {
+    say("Work was saved, but your balance could not refresh. Refresh the page.");
+    return;
+  }
+
+  cash = profile.cash;
+  energy = profile.energy;
+  rep = profile.reputation;
+  day = profile.day;
+
   say("You worked hard and earned ₦8,000!");
   update();
   saveGame();
