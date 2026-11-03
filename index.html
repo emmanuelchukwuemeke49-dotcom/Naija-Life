@@ -416,9 +416,40 @@ async function rest() {
   saveGame();
 }
   
-function nextDay() {
-  day++;
-  energy = 100;
+
+async function nextDay() {
+  say("Starting a new day...");
+
+  const { error } = await supabaseClient.rpc("advance_game_day");
+
+  if (error) {
+    say(error.message);
+    return;
+  }
+
+  const { data: { user } } = await supabaseClient.auth.getUser();
+
+  if (!user) {
+    say("Please log in again.");
+    return;
+  }
+
+  const { data: profile, error: profileError } = await supabaseClient
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .single();
+
+  if (profileError) {
+    say("New day saved, but your profile could not refresh. Refresh the page.");
+    return;
+  }
+
+  cash = profile.cash;
+  energy = profile.energy;
+  rep = profile.reputation;
+  day = profile.day;
+
   say("A new day begins in " + city + "!");
   update();
   saveGame();
