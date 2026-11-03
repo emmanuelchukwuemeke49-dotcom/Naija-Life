@@ -557,8 +557,32 @@ async function loadPlayers() {
     const reputation = document.createElement("p");
     reputation.textContent = "⭐ Reputation: " + otherPlayer.reputation;
 
-    card.append(name, cityText, reputation);
-    list.appendChild(card);
+    
+const friendButton = document.createElement("button");
+friendButton.textContent = "Add Friend";
+
+friendButton.onclick = async function() {
+  friendButton.disabled = true;
+  friendButton.textContent = "Sending...";
+
+  const { error } = await supabaseClient.rpc(
+    "send_friend_request",
+    { target_user: otherPlayer.id }
+  );
+
+  if (error) {
+    friendButton.disabled = false;
+    friendButton.textContent = "Add Friend";
+    alert(error.message);
+    return;
+  }
+
+  friendButton.textContent = "Request Sent";
+};
+
+card.append(name, cityText, reputation, friendButton);
+list.appendChild(card);
+
   });
 }
 
