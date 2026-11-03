@@ -597,6 +597,74 @@ list.appendChild(card);
   });
 }
 
+async function loadFriendRequests() {
+  const list = document.getElementById("requestsList");
+  list.textContent = "Checking requests...";
+
+  const { data: { user }, error: authError } =
+    await supabaseClient.auth.getUser();
+
+  if (authError || !user) {
+    list.textContent = "Please log in first.";
+    return;
+  }
+
+  const { data: requests, error } = await supabaseClient
+    .from("friendships")
+    .select("id, requester_id")
+    .eq("addressee_id", user.id)
+    .eq("status", "pending");
+
+  if (error) {
+    list.textContent = "Could not load requests: " + error.message;
+    return;
+  }
+
+  if (!requests || requests.length === 0) {
+    list.textContent = "No new friend requests.";
+    return;
+  }
+
+  list.replaceChildren();
+
+  for (const request of requests) {
+    const { data: sender } = await supabaseClient
+      .from("profiles")
+      .select("display_name, city")
+      .eq("id", request.requester_id)
+      .single();
+
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const name = document.createElement("h3");
+    name.textContent = sender
+      ? sender.display_name + " from " + sender.city
+      : "New player";
+
+    const accept = document.createElement("button");
+    accept.textContent = "Accept";
+
+    accept.onclick = async function() {
+      const { error } = await supabaseClient.rpc(
+        "respond_to_friend_request",
+        { request_id: request.id, decision: "accepted" }
+      );
+
+      if (error) {
+        alert(error.message);
+        return;
+      }
+
+      card.remove();
+      alert("Friend request accepted!");
+    };
+
+    card.append(name, accept);
+    list.appendChild(card);
+  }
+}
+
 </script>
 </body>
 </html>
