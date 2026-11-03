@@ -757,6 +757,7 @@ chatButton.textContent = "💬 Chat";
 
 chatButton.onclick = function() {
 alert("Chat button is working!");
+alert(document.getElementById("privateChat") ? "Chat section found!" : "Chat section NOT found!");
   document.getElementById("messageFriendId").value = friendId;
   document.getElementById("privateChat").scrollIntoView({
     behavior: "smooth"
