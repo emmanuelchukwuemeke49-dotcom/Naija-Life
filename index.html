@@ -756,6 +756,34 @@ async function loadFriends() {
   }
 }
 
+async function sendPrivateMessage() {
+  const friendId = document.getElementById("messageFriendId").value.trim();
+  const messageInput = document.getElementById("privateMessageInput");
+  const message = messageInput.value.trim();
+
+  if (!friendId || !message) {
+    alert("Enter your friend's ID and a message.");
+    return;
+  }
+
+  const { error } = await supabaseClient.rpc(
+    "send_private_message",
+    {
+      target_user: friendId,
+      message_text: message
+    }
+  );
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  messageInput.value = "";
+  await loadPrivateMessages();
+}
+
+
 </script>
 </body>
 </html>
