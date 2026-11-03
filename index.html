@@ -657,6 +657,12 @@ playerLevel = Number(profile.player_level ?? 1);
   document.getElementById("game").style.display = "block";
 
   update();
+document.getElementById("xp").textContent = xp.toLocaleString("en-NG");
+document.getElementById("playerLevel").textContent = playerLevel;
+document.getElementById("levelSummary").textContent = "Level " + playerLevel;
+document.getElementById("xpSummary").textContent = xp.toLocaleString("en-NG") + " XP";
+document.getElementById("travelCurrentCity").textContent =
+  "Current city: " + city + ", Nigeria";
 
   await loadJobs();
   await loadBusinesses();
