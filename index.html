@@ -79,51 +79,142 @@ footer{text-align:center;color:#87988e;padding:20px;font-size:12px}
 </main>
 <footer>Naija Life © 2026 | Built for Nigeria 🇳🇬</footer>
 
-<script>
-let player="",cash=20000,energy=100,rep=0,day=1,city="Lagos";
 
-function startGame(){
-player=document.getElementById("player").value.trim();
-city=document.getElementById("city").value;
-if(!player){alert("Enter your player name first!");return}
-document.getElementById("game").style.display="block";
-document.getElementById("welcome").textContent="Welcome, "+player+"!";
-document.getElementById("location").textContent=city+", Nigeria";
-say("You arrived in "+city+". Your journey has started!");
-update();
+<script>
+let player = "";
+let cash = 20000;
+let energy = 100;
+let rep = 0;
+let day = 1;
+let city = "Lagos";
+
+function saveGame() {
+  const data = {player, cash, energy, rep, day, city};
+  localStorage.setItem("naijaLifeSave", JSON.stringify(data));
 }
-function say(message){
-let log=document.getElementById("log");
-log.innerHTML=message+"<br>"+log.innerHTML;
+
+function loadGame() {
+  const saved = localStorage.getItem("naijaLifeSave");
+  if (!saved) return false;
+
+  try {
+    const data = JSON.parse(saved);
+    if (!data || typeof data.player !== "string") return false;
+
+    player = data.player;
+    cash = Number(data.cash);
+    energy = Number(data.energy);
+    rep = Number(data.rep);
+    day = Number(data.day);
+    city = data.city;
+
+    if (![cash, energy, rep, day].every(Number.isFinite)) return false;
+    if (cash < 0 || energy < 0 || energy > 100 || rep < 0 || day < 1) return false;
+    if (!["Lagos","Warri","Abuja","Benin City","Onitsha"].includes(city)) return false;
+
+    return true;
+  } catch {
+    return false;
+  }
 }
-function update(){
-document.getElementById("cash").textContent="₦"+cash.toLocaleString("en-NG");
-document.getElementById("energy").textContent=energy;
-document.getElementById("rep").textContent=rep;
-document.getElementById("day").textContent=day;
+
+function startGame() {
+  player = document.getElementById("player").value.trim();
+  city = document.getElementById("city").value;
+
+  if (!player) {
+    alert("Enter your player name first!");
+    return;
+  }
+
+  cash = 20000;
+  energy = 100;
+  rep = 0;
+  day = 1;
+
+  document.getElementById("game").style.display = "block";
+  document.getElementById("welcome").textContent = "Welcome, " + player + "!";
+  document.getElementById("location").textContent = city + ", Nigeria";
+
+  say("You arrived in " + city + ". Your journey has started!");
+  update();
+  saveGame();
 }
-function work(){
-if(energy<20){say("You're too tired to work. Get some rest!");return}
-cash+=8000;energy-=20;say("You worked hard and earned ₦8,000!");update();
+
+function say(message) {
+  const log = document.getElementById("log");
+  log.textContent = message + "\n" + log.textContent;
 }
-function study(){
-if(energy<15){say("You're too tired to study.");return}
-energy-=15;rep+=2;say("You studied and improved your skills!");update();
+
+function update() {
+  document.getElementById("cash").textContent = "₦" + cash.toLocaleString("en-NG");
+  document.getElementById("energy").textContent = energy;
+  document.getElementById("rep").textContent = rep;
+  document.getElementById("day").textContent = day;
 }
-function business(){
-if(cash<5000){say("You need ₦5,000 to start a small business.");return}
-cash-=5000;rep+=5;say("You invested ₦5,000 in a small business.");update();
+
+function work() {
+  if (energy < 20) return say("You're too tired to work. Get some rest!");
+  cash += 8000;
+  energy -= 20;
+  say("You worked hard and earned ₦8,000!");
+  update();
+  saveGame();
 }
-function social(){
-if(energy<5){say("You're too tired to socialise.");return}
-energy-=5;rep+=3;say("You met people and made new connections!");update();
+
+function study() {
+  if (energy < 15) return say("You're too tired to study.");
+  energy -= 15;
+  rep += 2;
+  say("You studied and improved your skills!");
+  update();
+  saveGame();
 }
-function rest(){
-energy=Math.min(100,energy+30);say("You rested and recovered energy.");update();
+
+function business() {
+  if (cash < 5000) return say("You need ₦5,000 to start a small business.");
+  cash -= 5000;
+  rep += 5;
+  say("You invested ₦5,000 in a small business.");
+  update();
+  saveGame();
 }
-function nextDay(){
-day++;energy=100;say("A new day begins in "+city+"!");update();
+
+function social() {
+  if (energy < 5) return say("You're too tired to socialise.");
+  energy -= 5;
+  rep += 3;
+  say("You met people and made new connections!");
+  update();
+  saveGame();
 }
+
+function rest() {
+  energy = Math.min(100, energy + 30);
+  say("You rested and recovered energy.");
+  update();
+  saveGame();
+}
+
+function nextDay() {
+  day++;
+  energy = 100;
+  say("A new day begins in " + city + "!");
+  update();
+  saveGame();
+}
+
+window.addEventListener("DOMContentLoaded", function() {
+  if (loadGame()) {
+    document.getElementById("player").value = player;
+    document.getElementById("city").value = city;
+    document.getElementById("game").style.display = "block";
+    document.getElementById("welcome").textContent = "Welcome back, " + player + "!";
+    document.getElementById("location").textContent = city + ", Nigeria";
+    say("Your saved adventure has been restored!");
+    update();
+  }
+});
 </script>
 </body>
 </html>
