@@ -74,6 +74,7 @@ footer{text-align:center;color:#87988e;padding:20px;font-size:12px}
   </div>
 </div>
 
+
 <div class="card" id="friendRequests">
   <h2>👥 Friend Requests</h2>
   <button onclick="loadFriendRequests()">
@@ -81,11 +82,12 @@ footer{text-align:center;color:#87988e;padding:20px;font-size:12px}
   </button>
   <div id="requestsList">
     <p>Your incoming requests will appear here.</p>
-  
+  </div>
+</div>
+
 <div class="card" id="myFriends">
   <h2>💚 My Friends</h2>
   <button onclick="loadFriends()">View Friends</button>
-
   <div id="friendsList">
     <p>Your accepted friends will appear here.</p>
   </div>
@@ -93,31 +95,19 @@ footer{text-align:center;color:#87988e;padding:20px;font-size:12px}
 
 <div class="card" id="privateChat">
   <h2>💬 Private Messages</h2>
-
-  <input
-    id="messageFriendId"
-    placeholder="Friend's player ID"
-  >
+  <input id="messageFriendId" placeholder="Friend's player ID">
 
   <div id="privateMessages">
     <p>Select a friend to start chatting.</p>
   </div>
 
-  <input
-    id="privateMessageInput"
-    placeholder="Write a message..."
-  >
+  <input id="privateMessageInput" placeholder="Write a message...">
 
-  <button onclick="sendPrivateMessage()">
-    Send Message
-  </button>
-
-  <button onclick="loadPrivateMessages()">
-    Refresh Messages
-  </button>
+  <button onclick="sendPrivateMessage()">Send Message</button>
+  <button onclick="loadPrivateMessages()">Refresh Messages</button>
+</div>
 </div>
 
-  
 <div class="card">
 <h2 id="welcome">Welcome!</h2>
 <div class="stats">
