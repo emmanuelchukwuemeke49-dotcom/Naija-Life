@@ -514,6 +514,54 @@ async function restorePlayerSession() {
 
 restorePlayerSession();
 
+async function loadPlayers() {
+  const list = document.getElementById("playersList");
+  list.textContent = "Finding players...";
+
+  const { data: { user }, error: authError } =
+    await supabaseClient.auth.getUser();
+
+  if (authError || !user) {
+    list.textContent = "Please log in first.";
+    return;
+  }
+
+  const { data: players, error } = await supabaseClient
+    .from("profiles")
+    .select("id, display_name, city, reputation")
+    .neq("id", user.id)
+    .order("display_name");
+
+  if (error) {
+    list.textContent = "Could not load players: " + error.message;
+    return;
+  }
+
+  if (!players || players.length === 0) {
+    list.textContent = "No other players have joined yet.";
+    return;
+  }
+
+  list.replaceChildren();
+
+  players.forEach(function(otherPlayer) {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const name = document.createElement("h3");
+    name.textContent = otherPlayer.display_name;
+
+    const cityText = document.createElement("p");
+    cityText.textContent = "📍 " + otherPlayer.city + ", Nigeria";
+
+    const reputation = document.createElement("p");
+    reputation.textContent = "⭐ Reputation: " + otherPlayer.reputation;
+
+    card.append(name, cityText, reputation);
+    list.appendChild(card);
+  });
+}
+
 </script>
 </body>
 </html>
