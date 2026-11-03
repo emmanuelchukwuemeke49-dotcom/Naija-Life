@@ -292,6 +292,72 @@ async function nextDay() {
 }
 
 async function loadPlayers() {
+  async function loadCityMessages() {
+  const list = document.getElementById("cityMessages");
+  list.textContent = "Loading city messages...";
+
+  const { data, error } = await supabaseClient
+    .from("chat_messages")
+    .select("display_name, message, created_at")
+    .eq("city", city)
+    .order("created_at", { ascending: true })
+    .limit(100);
+
+  if (error) {
+    list.textContent = "Chat error: " + error.message;
+    return;
+  }
+
+  list.replaceChildren();
+
+  if (!data || data.length === 0) {
+    list.textContent = "No messages yet. Be the first to say hello!";
+    return;
+  }
+
+  data.forEach(msg => {
+    const bubble = document.createElement("div");
+    bubble.className = "message-bubble";
+    bubble.textContent = msg.display_name + ": " + msg.message;
+    list.appendChild(bubble);
+  });
+
+  list.scrollTop = list.scrollHeight;
+}
+
+async function sendCityMessage() {
+  const input = document.getElementById("cityMessageInput");
+  const message = input.value.trim();
+
+  if (!message) {
+    alert("Write a message first.");
+    return;
+  }
+
+  const { data: { user } } = await supabaseClient.auth.getUser();
+
+  if (!user) {
+    alert("Please log in first.");
+    return;
+  }
+
+  const { error } = await supabaseClient
+    .from("chat_messages")
+    .insert({
+      user_id: user.id,
+      display_name: player,
+      city: city,
+      message: message
+    });
+
+  if (error) {
+    alert("Message failed: " + error.message);
+    return;
+  }
+
+  input.value = "";
+  await loadCityMessages();
+  }
   const list = document.getElementById("playersList");
   list.textContent = "Finding players...";
 
