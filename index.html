@@ -285,14 +285,43 @@ async function work() {
   saveGame();
 }
 
-function study() {
-  if (energy < 15) return say("You're too tired to study.");
-  energy -= 15;
-  rep += 2;
+
+async function study() {
+  say("Processing your study session...");
+
+  const { error } = await supabaseClient.rpc(
+    "perform_game_action",
+    { action_name: "study" }
+  );
+
+  if (error) {
+    say(error.message);
+    return;
+  }
+
+  const { data: { user } } = await supabaseClient.auth.getUser();
+
+  const { data: profile, error: profileError } = await supabaseClient
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .single();
+
+  if (profileError) {
+    say("Study was saved, but your profile could not refresh. Refresh the page.");
+    return;
+  }
+
+  cash = profile.cash;
+  energy = profile.energy;
+  rep = profile.reputation;
+  day = profile.day;
+
   say("You studied and improved your skills!");
   update();
   saveGame();
 }
+
 
 function business() {
   if (cash < 5000) return say("You need ₦5,000 to start a small business.");
