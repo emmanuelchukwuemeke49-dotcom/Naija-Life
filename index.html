@@ -14,6 +14,20 @@ header{padding:22px;background:#183b2d;text-align:center}
 header h1{margin:0;color:#80e6a1}
 header p{margin:7px 0 0;color:#c5d8ca}
 main{padding:16px;max-width:600px;margin:auto}
+
+<div class="card" id="authPanel">
+  <h2>🇳🇬 Player Account</h2>
+  <input id="authName" placeholder="Your player name">
+  <input id="authEmail" type="email" placeholder="Email address">
+  <input id="authPassword" type="password" placeholder="Password (minimum 6 characters)">
+
+  <button onclick="registerPlayer()">Create Account</button>
+  <button onclick="loginPlayer()" style="background:#344b3e;color:white">
+    Log In
+  </button>
+
+  <p id="authMessage"></p>
+</div>
 .card{background:#1b2924;border:1px solid #34463d;border-radius:15px;padding:17px;margin-bottom:15px}
 h2{font-size:19px;margin-top:0}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
