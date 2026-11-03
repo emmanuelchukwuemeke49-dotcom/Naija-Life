@@ -77,6 +77,15 @@ footer{text-align:center;color:#87988e;padding:20px;font-size:12px}
       <h2>📖 Life Activities</h2>
       <div id="log">Your Nigerian life adventure begins here!</div>
     </section>
+    <section class="card" id="cityChat">
+  <h2>🏙️ Public City Chat</h2>
+  <p class="muted">Chat with players in <strong id="cityChatName">your city</strong>.</p>
+  <div id="cityMessages" aria-live="polite">Loading messages...</div>
+  <input id="cityMessageInput" placeholder="Write a city message..." maxlength="1000">
+  <button onclick="sendCityMessage()">Send to City</button>
+  <button onclick="loadCityMessages()" style="background:#344b3e;color:white">Refresh Chat</button>
+  <p id="cityChatStatus" class="muted"></p>
+    </section>
 
     <section class="card" id="playerDirectory">
       <h2>🌍 Naija Life Players</h2>
