@@ -108,6 +108,18 @@ footer {
 }
 
 #game { display: none; }
+
+.job-current {
+  background: #263b31;
+  padding: 14px;
+  border-radius: 10px;
+  margin: 12px 0;
+}
+
+.job-current strong {
+  color: #80e6a1;
+  font-size: 20px;
+}
 </style>
 </head>
 
@@ -164,6 +176,26 @@ footer {
       <button onclick="performAction('rest')">🛌 Rest</button>
       <button onclick="nextDay()">🌅 Next Day</button>
     </div>
+  </section>
+
+  <!-- JOBS AND CAREERS -->
+  <section class="card" id="jobsSection">
+    <h2>💼 Jobs & Careers</h2>
+
+    <div class="job-current">
+      <p class="muted">Your current occupation</p>
+      <strong id="currentJob">Unemployed</strong>
+    </div>
+
+    <p class="muted">
+      Choose a career, work hard and earn your salary.
+    </p>
+
+    <div id="jobsList">Loading available jobs...</div>
+
+    <button onclick="workJob()">💰 Work & Collect Salary</button>
+
+    <p id="jobStatus" class="muted" aria-live="polite"></p>
   </section>
 
   <section class="card">
@@ -315,7 +347,7 @@ async function refreshProfile() {
 
   const { data: profile, error } = await supabaseClient
     .from("profiles")
-    .select("display_name, city, cash, energy, reputation, day")
+    .select("display_name, city, cash, energy, reputation, day, job_title")
     .eq("id", user.id)
     .single();
 
@@ -334,11 +366,15 @@ async function refreshProfile() {
   rep = Number(profile.reputation ?? 0);
   day = Number(profile.day ?? 1);
 
+  document.getElementById("currentJob").textContent =
+    profile.job_title || "Unemployed";
+
   document.getElementById("authPanel").style.display = "none";
   document.getElementById("game").style.display = "block";
 
   update();
 
+  await loadJobs();
   await loadCityMessages();
   startCityChatLive();
 }
@@ -536,6 +572,126 @@ async function nextDay() {
     say("A new day begins in " + city + "!");
   } catch (err) {
     say("Profile refresh failed: " + err.message);
+  }
+}
+
+
+/* JOBS AND CAREERS */
+
+async function loadJobs() {
+  const list = document.getElementById("jobsList");
+  if (!list) return;
+
+  list.textContent = "Loading available jobs...";
+
+  try {
+    const { data: jobs, error } = await supabaseClient
+      .from("jobs")
+      .select("id, job_title, salary, description")
+      .order("salary", { ascending: false });
+
+    if (error) throw error;
+
+    list.replaceChildren();
+
+    if (!jobs || jobs.length === 0) {
+      list.textContent = "No jobs available.";
+      return;
+    }
+
+    jobs.forEach(job => {
+      const card = document.createElement("div");
+      card.className = "player-card";
+
+      const title = document.createElement("h3");
+      title.textContent = job.job_title;
+
+      const salary = document.createElement("p");
+      salary.textContent =
+        "💰 Salary: ₦" +
+        Number(job.salary).toLocaleString("en-NG") +
+        " per working day";
+
+      const description = document.createElement("p");
+      description.className = "muted";
+      description.textContent = job.description || "";
+
+      const applyButton = document.createElement("button");
+      applyButton.textContent =
+        job.job_title === document.getElementById("currentJob").textContent
+          ? "Current Job"
+          : "Apply for Job";
+
+      if (job.job_title === document.getElementById("currentJob").textContent) {
+        applyButton.disabled = true;
+      }
+
+      applyButton.onclick = async () => {
+        applyButton.disabled = true;
+        applyButton.textContent = "Applying...";
+
+        try {
+          const { data, error } = await supabaseClient.rpc(
+            "apply_for_job",
+            { selected_job_id: job.id }
+          );
+
+          if (error) throw error;
+
+          document.getElementById("jobStatus").textContent = data;
+
+          await refreshProfile();
+
+        } catch (err) {
+          document.getElementById("jobStatus").textContent =
+            "Application failed: " + err.message;
+
+          applyButton.disabled = false;
+          applyButton.textContent = "Apply for Job";
+        }
+      };
+
+      card.append(title, salary, description, applyButton);
+      list.appendChild(card);
+    });
+
+  } catch (err) {
+    list.textContent = "Jobs error: " + err.message;
+  }
+}
+
+
+async function workJob() {
+  const button = document.querySelector(
+    "#jobsSection button[onclick='workJob()']"
+  );
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Working...";
+  }
+
+  try {
+    const { data, error } =
+      await supabaseClient.rpc("work_job");
+
+    if (error) throw error;
+
+    document.getElementById("jobStatus").textContent = data;
+
+    await refreshProfile();
+
+    say(data);
+
+  } catch (err) {
+    document.getElementById("jobStatus").textContent =
+      "Work failed: " + err.message;
+
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.textContent = "💰 Work & Collect Salary";
+    }
   }
 }
 
