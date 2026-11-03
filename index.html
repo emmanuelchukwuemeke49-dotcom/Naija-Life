@@ -312,6 +312,43 @@ window.addEventListener("DOMContentLoaded", function() {
     update();
   }
 });
+
+async function restorePlayerSession() {
+  const { data: { session } } =
+    await supabaseClient.auth.getSession();
+
+  if (!session) return;
+
+  const { data: profile, error } = await supabaseClient
+    .from("profiles")
+    .select("*")
+    .eq("id", session.user.id)
+    .single();
+
+  if (error || !profile) {
+    console.log("Could not load player profile:", error);
+    return;
+  }
+
+  player = profile.display_name;
+  city = profile.city;
+  cash = profile.cash;
+  energy = profile.energy;
+  rep = profile.reputation;
+  day = profile.day;
+
+  document.getElementById("authPanel").style.display = "none";
+  document.getElementById("game").style.display = "block";
+  document.getElementById("welcome").textContent =
+    "Welcome back, " + player + "!";
+  document.getElementById("location").textContent =
+    city + ", Nigeria";
+
+  update();
+}
+
+restorePlayerSession();
+
 </script>
 </body>
 </html>
