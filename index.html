@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,145 +12,166 @@ body{margin:0;background:#101b18;color:white;font-family:Arial,sans-serif}
 header{padding:22px;background:#183b2d;text-align:center}
 header h1{margin:0;color:#80e6a1}
 header p{margin:7px 0 0;color:#c5d8ca}
-main{padding:16px;max-width:600px;margin:auto}
+main{padding:16px;max-width:650px;margin:auto}
 .card{background:#1b2924;border:1px solid #34463d;border-radius:15px;padding:17px;margin-bottom:15px}
 h2{font-size:19px;margin-top:0}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .stat{background:#263b31;padding:13px;border-radius:10px}
 .stat small{color:#b5c7ba}
 .stat strong{display:block;margin-top:7px;font-size:20px}
-button,select,input{width:100%;padding:13px;border:0;border-radius:9px;margin-top:9px;font-size:15px}
-button{background:#62d58a;color:#10271a;font-weight:bold}
-button:active{transform:scale(.98)}
-select,input{background:#30443a;color:white}
+button,input,select{width:100%;padding:13px;border:0;border-radius:9px;margin-top:9px;font-size:15px}
+button{background:#62d58a;color:#10271a;font-weight:bold;cursor:pointer}
+button:disabled{opacity:.6}
+input,select{background:#30443a;color:white}
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-#log{font-size:14px;line-height:1.7;color:#d2e4d7;max-height:160px;overflow:auto}
+#log{font-size:14px;line-height:1.7;color:#d2e4d7;max-height:160px;overflow:auto;white-space:pre-line}
+.player-card,.message-bubble{background:#263b31;padding:12px;border-radius:10px;margin:9px 0}
+.message-bubble{overflow-wrap:anywhere}
+.muted{color:#b5c7ba;font-size:13px}
 footer{text-align:center;color:#87988e;padding:20px;font-size:12px}
+#game{display:none}
 </style>
 </head>
 <body>
 <header>
-<h1>🇳🇬 NAIJA LIFE</h1>
-<p>Your life. Your hustle. Your story.</p>
+  <h1>🇳🇬 NAIJA LIFE</h1>
+  <p>Your life. Your hustle. Your story.</p>
 </header>
+
 <main>
-<div class="card" id="authPanel">
-  <h2>🇳🇬 Player Account</h2>
-  <input id="authName" placeholder="Your player name">
-  <input id="authEmail" type="email" placeholder="Email address">
-  <input id="authPassword" type="password" placeholder="Password (minimum 6 characters)">
+  <section class="card" id="authPanel">
+    <h2>🇳🇬 Player Account</h2>
+    <input id="authName" placeholder="Your player name">
+    <input id="authEmail" type="email" placeholder="Email address">
+    <input id="authPassword" type="password" placeholder="Password (minimum 6 characters)">
+    <button onclick="registerPlayer()">Create Account</button>
+    <button onclick="loginPlayer()" style="background:#344b3e;color:white">Log In</button>
+    <p id="authMessage" class="muted"></p>
+  </section>
 
-  <button onclick="registerPlayer()">Create Account</button>
-  <button onclick="loginPlayer()" style="background:#344b3e;color:white">
-    Log In
-  </button>
+  <section id="game">
+    <section class="card">
+      <h2 id="welcome">Welcome!</h2>
+      <p id="location">Nigeria</p>
+      <div class="stats">
+        <div class="stat"><small>💰 Cash</small><strong id="cash">₦0</strong></div>
+        <div class="stat"><small>⚡ Energy</small><strong id="energy">100</strong></div>
+        <div class="stat"><small>⭐ Reputation</small><strong id="rep">0</strong></div>
+        <div class="stat"><small>📅 Day</small><strong id="day">1</strong></div>
+      </div>
+    </section>
 
-  <p id="authMessage"></p>
-</div>
-<div class="card">
-<h2>Create Your Character</h2>
-<input id="player" placeholder="Enter your player name">
-<select id="city">
-<option>Lagos</option>
-<option>Warri</option>
-<option>Abuja</option>
-<option>Benin City</option>
-<option>Onitsha</option>
-</select>
-<button onclick="startGame()">Enter Naija Life</button>
-</div>
+    <section class="card">
+      <h2>🏙️ Your City</h2>
+      <div class="actions">
+        <button onclick="performAction('work')">💼 Work</button>
+        <button onclick="performAction('study')">📚 Study</button>
+        <button onclick="performAction('business')">🏪 Business</button>
+        <button onclick="performAction('social')">🤝 Socialise</button>
+        <button onclick="performAction('rest')">🛌 Rest</button>
+        <button onclick="nextDay()">🌅 Next Day</button>
+      </div>
+    </section>
 
-<div id="game" style="display:none">
+    <section class="card">
+      <h2>📖 Life Activities</h2>
+      <div id="log">Your Nigerian life adventure begins here!</div>
+    </section>
 
-<div class="card" id="playerDirectory">
-  <h2>🌍 Naija Life Players</h2>
-  <p>Discover other players across Nigeria.</p>
+    <section class="card" id="playerDirectory">
+      <h2>🌍 Naija Life Players</h2>
+      <p>Discover other players across Nigeria.</p>
+      <button onclick="loadPlayers()">Find Players</button>
+      <div id="playersList" class="muted">Tap Find Players to see who's playing.</div>
+    </section>
 
-  <button onclick="loadPlayers()">Find Players</button>
+    <section class="card" id="friendRequests">
+      <h2>👥 Friend Requests</h2>
+      <button onclick="loadFriendRequests()">Check Requests</button>
+      <div id="requestsList" class="muted">Your incoming requests will appear here.</div>
+    </section>
 
-  <div id="playersList">
-    <p>Tap Find Players to see who's playing.</p>
-  </div>
-</div>
+    <section class="card" id="myFriends">
+      <h2>💚 My Friends</h2>
+      <button onclick="loadFriends()">View Friends</button>
+      <div id="friendsList" class="muted">Your accepted friends will appear here.</div>
+    </section>
 
+    <section class="card" id="privateChat">
+      <h2>💬 Private Messages</h2>
+      <p class="muted">Choose Chat beside a friend in My Friends to select them automatically.</p>
+      <input id="messageFriendId" type="hidden">
+      <p id="chatWith" class="muted">No friend selected.</p>
+      <div id="privateMessages" aria-live="polite">Select a friend to start chatting.</div>
+      <input id="privateMessageInput" placeholder="Write a message..." maxlength="2000">
+      <button onclick="sendPrivateMessage()">Send Message</button>
+      <button onclick="loadPrivateMessages()" style="background:#344b3e;color:white">Refresh Messages</button>
+    </section>
 
-<div class="card" id="friendRequests">
-  <h2>👥 Friend Requests</h2>
-  <button onclick="loadFriendRequests()">
-    Check Requests
-  </button>
-  <div id="requestsList">
-    <p>Your incoming requests will appear here.</p>
-  </div>
-</div>
-
-<div class="card" id="myFriends">
-  <h2>💚 My Friends</h2>
-  <button onclick="loadFriends()">View Friends</button>
-  <div id="friendsList">
-    <p>Your accepted friends will appear here.</p>
-  </div>
-</div>
-
-<div class="card" id="privateChat">
-  <h2>💬 Private Messages</h2>
-  <input id="messageFriendId" placeholder="Friend's player ID">
-
-  <div id="privateMessages">
-    <p>Select a friend to start chatting.</p>
-  </div>
-
-  <input id="privateMessageInput" placeholder="Write a message...">
-
-  <button onclick="sendPrivateMessage()">Send Message</button>
-  <button onclick="loadPrivateMessages()">Refresh Messages</button>
-</div>
-</div>
-
-<div class="card">
-<h2 id="welcome">Welcome!</h2>
-<div class="stats">
-<div class="stat"><small>💰 Cash</small><strong id="cash">₦20,000</strong></div>
-<div class="stat"><small>⚡ Energy</small><strong id="energy">100</strong></div>
-<div class="stat"><small>⭐ Reputation</small><strong id="rep">0</strong></div>
-<div class="stat"><small>📅 Day</small><strong id="day">1</strong></div>
-</div>
-</div>
-
-<div class="card">
-<h2>🏙️ Your City</h2>
-<p id="location">Lagos, Nigeria</p>
-<div class="actions">
-<button onclick="work()">💼 Work</button>
-<button onclick="study()">📚 Study</button>
-<button onclick="business()">🏪 Business</button>
-<button onclick="social()">🤝 Socialise</button>
-<button onclick="rest()">🛌 Rest</button>
-<button onclick="nextDay()">🌅 Next Day</button>
-</div>
-</div>
-
-<div class="card">
-<h2>📖 Life Activities</h2>
-<div id="log">Your Nigerian life adventure begins here!</div>
-</div>
-</div>
+    <section class="card">
+      <button onclick="logoutPlayer()" style="background:#344b3e;color:white">Log Out</button>
+    </section>
+  </section>
 </main>
+
 <footer>Naija Life © 2026 | Built for Nigeria 🇳🇬</footer>
 
-
 <script>
-
 const supabaseClient = window.supabase.createClient(
   "https://dldonxcyaqhenbltticc.supabase.co",
   "sb_publishable_aDBysAMwpyXenWcgNE_oBg_H31fpgbB"
 );
 
+let player = "";
+let city = "Lagos";
+let cash = 0;
+let energy = 100;
+let rep = 0;
+let day = 1;
+let selectedFriendName = "";
+
+function say(message) {
+  const log = document.getElementById("log");
+  log.textContent = message + "\n" + log.textContent;
+}
+
+function update() {
+  document.getElementById("cash").textContent = "₦" + Number(cash).toLocaleString("en-NG");
+  document.getElementById("energy").textContent = energy;
+  document.getElementById("rep").textContent = rep;
+  document.getElementById("day").textContent = day;
+  document.getElementById("welcome").textContent = "Welcome, " + player + "!";
+  document.getElementById("location").textContent = city + ", Nigeria";
+}
+
+async function refreshProfile() {
+  const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+  if (authError || !user) throw new Error("Please log in again.");
+
+  const { data: profile, error } = await supabaseClient
+    .from("profiles")
+    .select("display_name, city, cash, energy, reputation, day")
+    .eq("id", user.id)
+    .single();
+
+  if (error) throw error;
+
+  player = profile.display_name;
+  city = profile.city;
+  cash = profile.cash;
+  energy = profile.energy;
+  rep = profile.reputation;
+  day = profile.day;
+
+  document.getElementById("authPanel").style.display = "none";
+  document.getElementById("game").style.display = "block";
+  update();
+}
+
 async function registerPlayer() {
   const name = document.getElementById("authName").value.trim();
   const email = document.getElementById("authEmail").value.trim();
   const password = document.getElementById("authPassword").value;
-
   const message = document.getElementById("authMessage");
 
   if (!name || !email || password.length < 6) {
@@ -160,13 +180,10 @@ async function registerPlayer() {
   }
 
   message.textContent = "Creating your account...";
-
   const { data, error } = await supabaseClient.auth.signUp({
-    email: email,
-    password: password,
-    options: {
-      data: { display_name: name }
-    }
+    email,
+    password,
+    options: { data: { display_name: name } }
   });
 
   if (error) {
@@ -175,8 +192,8 @@ async function registerPlayer() {
   }
 
   message.textContent = data.session
-    ? "Account created! You can now log in."
-    : "Account created! Check your email to confirm your account.";
+    ? "Account created! You can now play."
+    : "Account created! Check your email to confirm your account, then log in.";
 }
 
 async function loginPlayer() {
@@ -185,377 +202,91 @@ async function loginPlayer() {
   const message = document.getElementById("authMessage");
 
   message.textContent = "Logging in...";
-
-  const { data, error } = await supabaseClient.auth.signInWithPassword({
-    email: email,
-    password: password
-  });
+  const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
   if (error) {
     message.textContent = error.message;
     return;
   }
 
-  const { data: profile, error: profileError } =
-    await supabaseClient
-      .from("profiles")
-      .select("*")
-      .eq("id", data.user.id)
-      .single();
-
-  if (profileError) {
-    message.textContent = "Login worked, but player profile could not load: " + profileError.message;
-    return;
+  try {
+    await refreshProfile();
+    message.textContent = "Welcome back!";
+    say("Your player profile has loaded.");
+  } catch (err) {
+    message.textContent = "Login worked, but profile could not load: " + err.message;
   }
-
-  player = profile.display_name;
-  city = profile.city;
-  cash = profile.cash;
-  energy = profile.energy;
-  rep = profile.reputation;
-  day = profile.day;
-
-  document.getElementById("authPanel").style.display = "none";
-  document.getElementById("game").style.display = "block";
-  document.getElementById("welcome").textContent = "Welcome back, " + player + "!";
-  document.getElementById("location").textContent = city + ", Nigeria";
-
-  update();
-  message.textContent = "Welcome back!";
 }
 
-let player = "";
-let cash = 500000;
-let energy = 100;
-let rep = 0;
-let day = 1;
-let city = "Lagos";
-
-function saveGame() {
-  const data = {player, cash, energy, rep, day, city};
-  localStorage.setItem("naijaLifeSave", JSON.stringify(data));
-}
-
-function loadGame() {
-  const saved = localStorage.getItem("naijaLifeSave");
-  if (!saved) return false;
+async function restorePlayerSession() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) return;
 
   try {
-    const data = JSON.parse(saved);
-    if (!data || typeof data.player !== "string") return false;
-
-    player = data.player;
-    cash = Number(data.cash);
-    energy = Number(data.energy);
-    rep = Number(data.rep);
-    day = Number(data.day);
-    city = data.city;
-
-    if (![cash, energy, rep, day].every(Number.isFinite)) return false;
-    if (cash < 0 || energy < 0 || energy > 100 || rep < 0 || day < 1) return false;
-    if (!["Lagos","Warri","Abuja","Benin City","Onitsha"].includes(city)) return false;
-
-    return true;
-  } catch {
-    return false;
+    await refreshProfile();
+    say("Your saved player has been restored.");
+  } catch (err) {
+    document.getElementById("authMessage").textContent = "Could not load player profile: " + err.message;
   }
 }
 
-function startGame() {
-  player = document.getElementById("player").value.trim();
-  city = document.getElementById("city").value;
-
-  if (!player) {
-    alert("Enter your player name first!");
+async function logoutPlayer() {
+  const { error } = await supabaseClient.auth.signOut();
+  if (error) {
+    alert(error.message);
     return;
   }
-
-  cash = 500000;
-  energy = 100;
-  rep = 0;
-  day = 1;
-
-  document.getElementById("game").style.display = "block";
-  document.getElementById("welcome").textContent = "Welcome, " + player + "!";
-  document.getElementById("location").textContent = city + ", Nigeria";
-
-  say("You arrived in " + city + ". Your journey has started!");
-  update();
-  saveGame();
+  document.getElementById("game").style.display = "none";
+  document.getElementById("authPanel").style.display = "block";
+  document.getElementById("authMessage").textContent = "You have logged out.";
 }
 
-function say(message) {
-  const log = document.getElementById("log");
-  log.textContent = message + "\n" + log.textContent;
-}
-
-function update() {
-  document.getElementById("cash").textContent = "₦" + cash.toLocaleString("en-NG");
-  document.getElementById("energy").textContent = energy;
-  document.getElementById("rep").textContent = rep;
-  document.getElementById("day").textContent = day;
-}
-
-
-async function work() {
-  say("Processing your work...");
-
-  const { error } = await supabaseClient.rpc(
-    "perform_game_action",
-    { action_name: "work" }
-  );
+async function performAction(action) {
+  say("Processing " + action + "...");
+  const { error } = await supabaseClient.rpc("perform_game_action", {
+    action_name: action
+  });
 
   if (error) {
     say(error.message);
     return;
   }
 
-  const { data: profile, error: profileError } = await supabaseClient
-    .from("profiles")
-    .select("*")
-    .eq("id", (await supabaseClient.auth.getUser()).data.user.id)
-    .single();
-
-  if (profileError) {
-    say("Work was saved, but your balance could not refresh. Refresh the page.");
-    return;
+  try {
+    await refreshProfile();
+    const messages = {
+      work: "You worked hard and earned money!",
+      study: "You studied and improved your skills!",
+      business: "You invested in your business!",
+      social: "You met people and made new connections!",
+      rest: "You rested and recovered energy!"
+    };
+    say(messages[action] || "Your action was saved.");
+  } catch (err) {
+    say("Action was saved, but profile could not refresh: " + err.message);
   }
-
-  cash = profile.cash;
-  energy = profile.energy;
-  rep = profile.reputation;
-  day = profile.day;
-
-  say("You worked hard and earned ₦8,000!");
-  update();
-  saveGame();
 }
-
-
-async function study() {
-  say("Processing your study session...");
-
-  const { error } = await supabaseClient.rpc(
-    "perform_game_action",
-    { action_name: "study" }
-  );
-
-  if (error) {
-    say(error.message);
-    return;
-  }
-
-  const { data: { user } } = await supabaseClient.auth.getUser();
-
-  const { data: profile, error: profileError } = await supabaseClient
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single();
-
-  if (profileError) {
-    say("Study was saved, but your profile could not refresh. Refresh the page.");
-    return;
-  }
-
-  cash = profile.cash;
-  energy = profile.energy;
-  rep = profile.reputation;
-  day = profile.day;
-
-  say("You studied and improved your skills!");
-  update();
-  saveGame();
-}
-
-
-
-async function business() {
-  say("Processing your business investment...");
-
-  const { error } = await supabaseClient.rpc(
-    "perform_game_action",
-    { action_name: "business" }
-  );
-
-  if (error) {
-    say(error.message);
-    return;
-  }
-
-  const { data: { user } } = await supabaseClient.auth.getUser();
-
-  if (!user) {
-    say("Please log in again.");
-    return;
-  }
-
-  const { data: profile, error: profileError } = await supabaseClient
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single();
-
-  if (profileError) {
-    say("Business was saved, but your profile could not refresh. Refresh the page.");
-    return;
-  }
-
-  cash = profile.cash;
-  energy = profile.energy;
-  rep = profile.reputation;
-  day = profile.day;
-
-  say("You invested ₦5,000 in a small business!");
-  update();
-  saveGame();
-}
-
-function social() {
-  if (energy < 5) return say("You're too tired to socialise.");
-  energy -= 5;
-  rep += 3;
-  say("You met people and made new connections!");
-  update();
-  saveGame();
-}
-
-
-async function rest() {
-  say("Recovering your energy...");
-
-  const { error } = await supabaseClient.rpc(
-    "perform_game_action",
-    { action_name: "rest" }
-  );
-
-  if (error) {
-    say(error.message);
-    return;
-  }
-
-  const { data: { user } } = await supabaseClient.auth.getUser();
-
-  if (!user) {
-    say("Please log in again.");
-    return;
-  }
-
-  const { data: profile, error: profileError } = await supabaseClient
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single();
-
-  if (profileError) {
-    say("Rest was saved, but your profile could not refresh. Refresh the page.");
-    return;
-  }
-
-  cash = profile.cash;
-  energy = profile.energy;
-  rep = profile.reputation;
-  day = profile.day;
-
-  say("You rested and recovered energy!");
-  update();
-  saveGame();
-}
-  
 
 async function nextDay() {
   say("Starting a new day...");
-
   const { error } = await supabaseClient.rpc("advance_game_day");
-
   if (error) {
     say(error.message);
     return;
   }
-
-  const { data: { user } } = await supabaseClient.auth.getUser();
-
-  if (!user) {
-    say("Please log in again.");
-    return;
+  try {
+    await refreshProfile();
+    say("A new day begins in " + city + "!");
+  } catch (err) {
+    say("New day was saved, but profile could not refresh: " + err.message);
   }
-
-  const { data: profile, error: profileError } = await supabaseClient
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single();
-
-  if (profileError) {
-    say("New day saved, but your profile could not refresh. Refresh the page.");
-    return;
-  }
-
-  cash = profile.cash;
-  energy = profile.energy;
-  rep = profile.reputation;
-  day = profile.day;
-
-  say("A new day begins in " + city + "!");
-  update();
-  saveGame();
 }
-
-window.addEventListener("DOMContentLoaded", function() {
-  if (loadGame()) {
-    document.getElementById("player").value = player;
-    document.getElementById("city").value = city;
-    document.getElementById("game").style.display = "block";
-    document.getElementById("welcome").textContent = "Welcome back, " + player + "!";
-    document.getElementById("location").textContent = city + ", Nigeria";
-    say("Your saved adventure has been restored!");
-    update();
-  }
-});
-
-async function restorePlayerSession() {
-  const { data: { session } } =
-    await supabaseClient.auth.getSession();
-
-  if (!session) return;
-
-  const { data: profile, error } = await supabaseClient
-    .from("profiles")
-    .select("*")
-    .eq("id", session.user.id)
-    .single();
-
-  if (error || !profile) {
-    console.log("Could not load player profile:", error);
-    return;
-  }
-
-  player = profile.display_name;
-  city = profile.city;
-  cash = profile.cash;
-  energy = profile.energy;
-  rep = profile.reputation;
-  day = profile.day;
-
-  document.getElementById("authPanel").style.display = "none";
-  document.getElementById("game").style.display = "block";
-  document.getElementById("welcome").textContent =
-    "Welcome back, " + player + "!";
-  document.getElementById("location").textContent =
-    city + ", Nigeria";
-
-  update();
-}
-
-restorePlayerSession();
 
 async function loadPlayers() {
   const list = document.getElementById("playersList");
   list.textContent = "Finding players...";
 
-  const { data: { user }, error: authError } =
-    await supabaseClient.auth.getUser();
-
+  const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
   if (authError || !user) {
     list.textContent = "Please log in first.";
     return;
@@ -571,53 +302,41 @@ async function loadPlayers() {
     list.textContent = "Could not load players: " + error.message;
     return;
   }
-
   if (!players || players.length === 0) {
     list.textContent = "No other players have joined yet.";
     return;
   }
 
   list.replaceChildren();
-
-  players.forEach(function(otherPlayer) {
+  players.forEach(otherPlayer => {
     const card = document.createElement("div");
-    card.className = "card";
+    card.className = "player-card";
 
     const name = document.createElement("h3");
     name.textContent = otherPlayer.display_name;
 
-    const cityText = document.createElement("p");
-    cityText.textContent = "📍 " + otherPlayer.city + ", Nigeria";
+    const details = document.createElement("p");
+    details.textContent = "📍 " + otherPlayer.city + " · ⭐ Reputation: " + otherPlayer.reputation;
 
-    const reputation = document.createElement("p");
-    reputation.textContent = "⭐ Reputation: " + otherPlayer.reputation;
+    const addButton = document.createElement("button");
+    addButton.textContent = "Add Friend";
+    addButton.onclick = async () => {
+      addButton.disabled = true;
+      addButton.textContent = "Sending...";
+      const { error: requestError } = await supabaseClient.rpc("send_friend_request", {
+        target_user: otherPlayer.id
+      });
+      if (requestError) {
+        addButton.disabled = false;
+        addButton.textContent = "Add Friend";
+        alert(requestError.message);
+        return;
+      }
+      addButton.textContent = "Request Sent";
+    };
 
-    
-const friendButton = document.createElement("button");
-friendButton.textContent = "Add Friend";
-
-friendButton.onclick = async function() {
-  friendButton.disabled = true;
-  friendButton.textContent = "Sending...";
-
-  const { error } = await supabaseClient.rpc(
-    "send_friend_request",
-    { target_user: otherPlayer.id }
-  );
-
-  if (error) {
-    friendButton.disabled = false;
-    friendButton.textContent = "Add Friend";
-    alert(error.message);
-    return;
-  }
-
-  friendButton.textContent = "Request Sent";
-};
-
-card.append(name, cityText, reputation, friendButton);
-list.appendChild(card);
-
+    card.append(name, details, addButton);
+    list.appendChild(card);
   });
 }
 
@@ -625,9 +344,7 @@ async function loadFriendRequests() {
   const list = document.getElementById("requestsList");
   list.textContent = "Checking requests...";
 
-  const { data: { user }, error: authError } =
-    await supabaseClient.auth.getUser();
-
+  const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
   if (authError || !user) {
     list.textContent = "Please log in first.";
     return;
@@ -643,14 +360,12 @@ async function loadFriendRequests() {
     list.textContent = "Could not load requests: " + error.message;
     return;
   }
-
   if (!requests || requests.length === 0) {
     list.textContent = "No new friend requests.";
     return;
   }
 
   list.replaceChildren();
-
   for (const request of requests) {
     const { data: sender } = await supabaseClient
       .from("profiles")
@@ -659,27 +374,21 @@ async function loadFriendRequests() {
       .single();
 
     const card = document.createElement("div");
-    card.className = "card";
-
-    const name = document.createElement("h3");
-    name.textContent = sender
-      ? sender.display_name + " from " + sender.city
-      : "New player";
+    card.className = "player-card";
+    const name = document.createElement("p");
+    name.textContent = sender ? sender.display_name + " from " + sender.city : "New player";
 
     const accept = document.createElement("button");
     accept.textContent = "Accept";
-
-    accept.onclick = async function() {
-      const { error } = await supabaseClient.rpc(
-        "respond_to_friend_request",
-        { request_id: request.id, decision: "accepted" }
-      );
-
-      if (error) {
-        alert(error.message);
+    accept.onclick = async () => {
+      const { error: responseError } = await supabaseClient.rpc("respond_to_friend_request", {
+        request_id: request.id,
+        decision: "accepted"
+      });
+      if (responseError) {
+        alert(responseError.message);
         return;
       }
-
       card.remove();
       alert("Friend request accepted!");
     };
@@ -693,9 +402,7 @@ async function loadFriends() {
   const list = document.getElementById("friendsList");
   list.textContent = "Loading friends...";
 
-  const { data: { user }, error: authError } =
-    await supabaseClient.auth.getUser();
-
+  const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
   if (authError || !user) {
     list.textContent = "Please log in first.";
     return;
@@ -705,86 +412,124 @@ async function loadFriends() {
     .from("friendships")
     .select("requester_id, addressee_id")
     .eq("status", "accepted")
-    .or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`);
+    .or("requester_id.eq." + user.id + ",addressee_id.eq." + user.id);
 
   if (error) {
     list.textContent = "Could not load friends: " + error.message;
     return;
   }
-
   if (!friendships || friendships.length === 0) {
     list.textContent = "You haven't added any friends yet.";
     return;
   }
 
   list.replaceChildren();
-
   for (const friendship of friendships) {
     const friendId = friendship.requester_id === user.id
       ? friendship.addressee_id
       : friendship.requester_id;
 
-    const { data: friend } = await supabaseClient
+    const { data: friend, error: friendError } = await supabaseClient
       .from("profiles")
       .select("display_name, city")
       .eq("id", friendId)
       .single();
 
-    if (!friend) continue;
+    if (friendError || !friend) continue;
 
     const card = document.createElement("div");
-    card.className = "card";
-
+    card.className = "player-card";
     const name = document.createElement("h3");
     name.textContent = friend.display_name;
 
     const cityText = document.createElement("p");
     cityText.textContent = "📍 " + friend.city + ", Nigeria";
 
-    
-const chatButton = document.createElement("button");
-chatButton.textContent = "💬 Chat";
+    const chatButton = document.createElement("button");
+    chatButton.textContent = "💬 Chat";
+    chatButton.onclick = async () => {
+      document.getElementById("messageFriendId").value = friendId;
+      document.getElementById("chatWith").textContent = "Chatting with " + friend.display_name;
+      document.getElementById("privateChat").scrollIntoView({ behavior: "smooth" });
+      await loadPrivateMessages();
+    };
 
-chatButton.onclick = function() {
-  alert("Chat button is working!");
-
-alert(document.getElementById("privateChat") ? "Chat section found!" : "Chat section NOT found!");
-
-  document.getElementById("messageFriendId").value = friendId;
-
-  document.getElementById("privateChat").scrollIntoView({
-    behavior: "smooth"
-  });
-
-  loadPrivateMessages();
-};
-
-card.append(name, cityText, chatButton);
-list.appendChild(card);
+    card.append(name, cityText, chatButton);
+    list.appendChild(card);
   }
 }
 
 async function sendPrivateMessage() {
   const friendId = document.getElementById("messageFriendId").value.trim();
-  const messageInput = document.getElementById("privateMessageInput");
-  const message = messageInput.value.trim();
+  const input = document.getElementById("privateMessageInput");
+  const message = input.value.trim();
 
-  if (!friendId || !message) {
-    alert("Enter your friend's ID and a message.");
+  if (!friendId) {
+    alert("Choose a friend using the Chat button in My Friends first.");
+    return;
+  }
+  if (!message) {
+    alert("Write a message first.");
     return;
   }
 
-  const { error } = await supabaseClient.rpc(
-    "send_private_message",
-    {
-      target_user: friendId,
-      message_text: message
-    }
-  );
+  const { error } = await supabaseClient.rpc("send_private_message", {
+    target_user: friendId,
+    message_text: message
+  });
 
   if (error) {
     alert(error.message);
     return;
   }
 
-  messageInput.value = ""
+  input.value = "";
+  await loadPrivateMessages();
+}
+
+async function loadPrivateMessages() {
+  const friendId = document.getElementById("messageFriendId").value.trim();
+  const list = document.getElementById("privateMessages");
+
+  if (!friendId) {
+    list.textContent = "Choose a friend from My Friends first.";
+    return;
+  }
+
+  const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+  if (authError || !user) {
+    list.textContent = "Please log in first.";
+    return;
+  }
+
+  const { data: messages, error } = await supabaseClient
+    .from("private_messages")
+    .select("sender_id, recipient_id, body, created_at")
+    .or(
+      "and(sender_id.eq." + user.id + ",recipient_id.eq." + friendId + "),and(sender_id.eq." + friendId + ",recipient_id.eq." + user.id + ")"
+    )
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    list.textContent = "Could not load messages: " + error.message;
+    return;
+  }
+
+  list.replaceChildren();
+  if (!messages || messages.length === 0) {
+    list.textContent = "No messages yet. Say hello!";
+    return;
+  }
+
+  messages.forEach(message => {
+    const bubble = document.createElement("div");
+    bubble.className = "message-bubble";
+    bubble.textContent = (message.sender_id === user.id ? "You: " : "Friend: ") + message.body;
+    list.appendChild(bubble);
+  });
+}
+
+restorePlayerSession();
+</script>
+</body>
+</html>
