@@ -673,6 +673,63 @@ async function loadFriendRequests() {
   }
 }
 
+async function loadFriends() {
+  const list = document.getElementById("friendsList");
+  list.textContent = "Loading friends...";
+
+  const { data: { user }, error: authError } =
+    await supabaseClient.auth.getUser();
+
+  if (authError || !user) {
+    list.textContent = "Please log in first.";
+    return;
+  }
+
+  const { data: friendships, error } = await supabaseClient
+    .from("friendships")
+    .select("requester_id, addressee_id")
+    .eq("status", "accepted")
+    .or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`);
+
+  if (error) {
+    list.textContent = "Could not load friends: " + error.message;
+    return;
+  }
+
+  if (!friendships || friendships.length === 0) {
+    list.textContent = "You haven't added any friends yet.";
+    return;
+  }
+
+  list.replaceChildren();
+
+  for (const friendship of friendships) {
+    const friendId = friendship.requester_id === user.id
+      ? friendship.addressee_id
+      : friendship.requester_id;
+
+    const { data: friend } = await supabaseClient
+      .from("profiles")
+      .select("display_name, city")
+      .eq("id", friendId)
+      .single();
+
+    if (!friend) continue;
+
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const name = document.createElement("h3");
+    name.textContent = friend.display_name;
+
+    const cityText = document.createElement("p");
+    cityText.textContent = "📍 " + friend.city + ", Nigeria";
+
+    card.append(name, cityText);
+    list.appendChild(card);
+  }
+}
+
 </script>
 </body>
 </html>
