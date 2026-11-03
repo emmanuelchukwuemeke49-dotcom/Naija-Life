@@ -151,7 +151,9 @@ function update() {
   document.getElementById("day").textContent = day;
   document.getElementById("welcome").textContent = "Welcome, " + player + "!";
   document.getElementById("location").textContent = city + ", Nigeria";
+  document.getElementById("cityChatName").textContent = city;
 }
+  
 
 async function refreshProfile() {
   const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
