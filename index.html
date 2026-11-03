@@ -323,11 +323,44 @@ async function study() {
 }
 
 
-function business() {
-  if (cash < 5000) return say("You need ₦5,000 to start a small business.");
-  cash -= 5000;
-  rep += 5;
-  say("You invested ₦5,000 in a small business.");
+
+async function business() {
+  say("Processing your business investment...");
+
+  const { error } = await supabaseClient.rpc(
+    "perform_game_action",
+    { action_name: "business" }
+  );
+
+  if (error) {
+    say(error.message);
+    return;
+  }
+
+  const { data: { user } } = await supabaseClient.auth.getUser();
+
+  if (!user) {
+    say("Please log in again.");
+    return;
+  }
+
+  const { data: profile, error: profileError } = await supabaseClient
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .single();
+
+  if (profileError) {
+    say("Business was saved, but your profile could not refresh. Refresh the page.");
+    return;
+  }
+
+  cash = profile.cash;
+  energy = profile.energy;
+  rep = profile.reputation;
+  day = profile.day;
+
+  say("You invested ₦5,000 in a small business!");
   update();
   saveGame();
 }
