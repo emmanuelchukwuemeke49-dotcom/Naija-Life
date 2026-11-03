@@ -624,6 +624,8 @@ async function refreshProfile() {
       bank_balance,
       wanted_level,
       jail_until_day
+      xp,
+      player_level,
     `)
     .eq("id", user.id)
     .single();
