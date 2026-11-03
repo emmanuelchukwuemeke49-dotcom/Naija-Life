@@ -1,0 +1,129 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101b18">
+<title>Naija Life</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#101b18;color:white;font-family:Arial,sans-serif}
+header{padding:22px;background:#183b2d;text-align:center}
+header h1{margin:0;color:#80e6a1}
+header p{margin:7px 0 0;color:#c5d8ca}
+main{padding:16px;max-width:600px;margin:auto}
+.card{background:#1b2924;border:1px solid #34463d;border-radius:15px;padding:17px;margin-bottom:15px}
+h2{font-size:19px;margin-top:0}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:#263b31;padding:13px;border-radius:10px}
+.stat small{color:#b5c7ba}
+.stat strong{display:block;margin-top:7px;font-size:20px}
+button,select,input{width:100%;padding:13px;border:0;border-radius:9px;margin-top:9px;font-size:15px}
+button{background:#62d58a;color:#10271a;font-weight:bold}
+button:active{transform:scale(.98)}
+select,input{background:#30443a;color:white}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#log{font-size:14px;line-height:1.7;color:#d2e4d7;max-height:160px;overflow:auto}
+footer{text-align:center;color:#87988e;padding:20px;font-size:12px}
+</style>
+</head>
+<body>
+<header>
+<h1>🇳🇬 NAIJA LIFE</h1>
+<p>Your life. Your hustle. Your story.</p>
+</header>
+<main>
+<div class="card">
+<h2>Create Your Character</h2>
+<input id="player" placeholder="Enter your player name">
+<select id="city">
+<option>Lagos</option>
+<option>Warri</option>
+<option>Abuja</option>
+<option>Benin City</option>
+<option>Onitsha</option>
+</select>
+<button onclick="startGame()">Enter Naija Life</button>
+</div>
+
+<div id="game" style="display:none">
+<div class="card">
+<h2 id="welcome">Welcome!</h2>
+<div class="stats">
+<div class="stat"><small>💰 Cash</small><strong id="cash">₦20,000</strong></div>
+<div class="stat"><small>⚡ Energy</small><strong id="energy">100</strong></div>
+<div class="stat"><small>⭐ Reputation</small><strong id="rep">0</strong></div>
+<div class="stat"><small>📅 Day</small><strong id="day">1</strong></div>
+</div>
+</div>
+
+<div class="card">
+<h2>🏙️ Your City</h2>
+<p id="location">Lagos, Nigeria</p>
+<div class="actions">
+<button onclick="work()">💼 Work</button>
+<button onclick="study()">📚 Study</button>
+<button onclick="business()">🏪 Business</button>
+<button onclick="social()">🤝 Socialise</button>
+<button onclick="rest()">🛌 Rest</button>
+<button onclick="nextDay()">🌅 Next Day</button>
+</div>
+</div>
+
+<div class="card">
+<h2>📖 Life Activities</h2>
+<div id="log">Your Nigerian life adventure begins here!</div>
+</div>
+</div>
+</main>
+<footer>Naija Life © 2026 | Built for Nigeria 🇳🇬</footer>
+
+<script>
+let player="",cash=20000,energy=100,rep=0,day=1,city="Lagos";
+
+function startGame(){
+player=document.getElementById("player").value.trim();
+city=document.getElementById("city").value;
+if(!player){alert("Enter your player name first!");return}
+document.getElementById("game").style.display="block";
+document.getElementById("welcome").textContent="Welcome, "+player+"!";
+document.getElementById("location").textContent=city+", Nigeria";
+say("You arrived in "+city+". Your journey has started!");
+update();
+}
+function say(message){
+let log=document.getElementById("log");
+log.innerHTML=message+"<br>"+log.innerHTML;
+}
+function update(){
+document.getElementById("cash").textContent="₦"+cash.toLocaleString("en-NG");
+document.getElementById("energy").textContent=energy;
+document.getElementById("rep").textContent=rep;
+document.getElementById("day").textContent=day;
+}
+function work(){
+if(energy<20){say("You're too tired to work. Get some rest!");return}
+cash+=8000;energy-=20;say("You worked hard and earned ₦8,000!");update();
+}
+function study(){
+if(energy<15){say("You're too tired to study.");return}
+energy-=15;rep+=2;say("You studied and improved your skills!");update();
+}
+function business(){
+if(cash<5000){say("You need ₦5,000 to start a small business.");return}
+cash-=5000;rep+=5;say("You invested ₦5,000 in a small business.");update();
+}
+function social(){
+if(energy<5){say("You're too tired to socialise.");return}
+energy-=5;rep+=3;say("You met people and made new connections!");update();
+}
+function rest(){
+energy=Math.min(100,energy+30);say("You rested and recovered energy.");update();
+}
+function nextDay(){
+day++;energy=100;say("A new day begins in "+city+"!");update();
+}
+</script>
+</body>
+</html>
