@@ -1602,9 +1602,10 @@ async function loadProperties() {
             if (error) throw error;
 
             document.getElementById("propertyStatus").textContent = data;
-            say(data);
-            await refreshProfile();
+say(data);
 
+await progressMission("Property Investor");
+await refreshProfile();
           } catch (err) {
             document.getElementById("propertyStatus").textContent =
               "Purchase failed: " + err.message;
