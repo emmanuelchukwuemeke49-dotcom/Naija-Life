@@ -2644,6 +2644,62 @@ async function loadPrivateMessages() {
 
 restorePlayerSession();
 
+async function payBail() {
+  const message = document.getElementById("prisonMessage");
+  message.textContent = "Processing bail payment...";
+
+  try {
+    const { data, error } = await supabaseClient.rpc("pay_bail");
+
+    if (error) throw error;
+
+    message.textContent = data;
+
+    await refreshProfile();
+
+  } catch (error) {
+    message.textContent = error.message;
+  }
+}
+
+
+async function attemptPrisonEscape() {
+  const message = document.getElementById("prisonMessage");
+  message.textContent = "Attempting prison escape...";
+
+  try {
+    const { data, error } = await supabaseClient.rpc("attempt_prison_escape");
+
+    if (error) throw error;
+
+    message.textContent = data;
+
+    await refreshProfile();
+
+  } catch (error) {
+    message.textContent = error.message;
+  }
+}
+
+
+function updatePrisonStatus() {
+  const status = document.getElementById("prisonStatus");
+  const remaining = document.getElementById("remainingJailDays");
+
+  if (!status || !remaining) return;
+
+  const daysLeft = Math.max(0, Number(jailUntilDay) - Number(day));
+
+  if (daysLeft > 0) {
+    status.textContent = "🔒 You are currently in prison";
+    remaining.textContent = "Remaining jail days: " + daysLeft;
+  } else {
+    status.textContent = "✅ You are free";
+    remaining.textContent = "Remaining jail days: 0";
+  }
+}
+
+
 </script>
 </body>
 </html>
