@@ -1391,9 +1391,11 @@ async function loadBusinesses() {
 
             if (error) throw error;
 
-            document.getElementById("businessStatus").textContent = data;
-            say(data);
-            await refreshProfile();
+document.getElementById("businessStatus").textContent = data;
+say(data);
+
+await progressMission("Business Owner");
+await refreshProfile();
 
           } catch (err) {
             document.getElementById("businessStatus").textContent =
