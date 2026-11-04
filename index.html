@@ -1175,9 +1175,13 @@ async function performAction(action) {
   }
 
   try {
-    await refreshProfile();
+    if (action === "social") {
+  await progressMission("Social Player");
+}
 
-    const messages = {
+await refreshProfile();
+
+const messages = {
       work: "You worked hard and earned money!",
       study: "You studied and improved your skills!",
       business: "You invested in your business!",
