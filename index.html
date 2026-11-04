@@ -392,6 +392,29 @@ footer {
 
     <p id="crimeStatus" class="muted" aria-live="polite"></p>
   </section>
+  
+<section class="card" id="prisonSection">
+  <h2>🔒 Prison & Bail</h2>
+
+  <div class="status-panel">
+    <p class="muted">Your prison status</p>
+    <strong id="prisonStatus">Checking status...</strong>
+    <p id="remainingJailDays" class="muted">Remaining jail days: 0</p>
+  </div>
+
+  <p class="section-note">
+    You can serve your sentence, pay bail or attempt a dangerous prison escape.
+  </p>
+
+  <button onclick="payBail()">💰 Pay Bail</button>
+
+  <button onclick="attemptPrisonEscape()">
+    🏃 Attempt Prison Escape
+  </button>
+
+  <p id="prisonMessage" class="muted" aria-live="polite"></p>
+</section>
+  
 <!-- MISSIONS -->
 
 <section class="card" id="missionsSection">
