@@ -2838,6 +2838,7 @@ async function completePoliceMission(missionId) {
     await refreshProfile();
     await loadPoliceMissions();
     await loadWantedPlayers();
+    await loadMyArrestRecords();
 
   } catch (error) {
     status.textContent = error.message;
