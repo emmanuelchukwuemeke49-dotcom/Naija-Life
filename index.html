@@ -745,6 +745,8 @@ playerLevel = Number(profile.player_level ?? 1);
   update();
 document.getElementById("xp").textContent = xp.toLocaleString("en-NG");
 document.getElementById("playerLevel").textContent = playerLevel;
+document.getElementById("policeRank").textContent =
+  policeRank || "Not a Police Officer";
 document.getElementById("levelSummary").textContent = "Level " + playerLevel;
 document.getElementById("xpSummary").textContent = xp.toLocaleString("en-NG") + " XP";
 document.getElementById("travelCurrentCity").textContent =
