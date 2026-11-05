@@ -3019,6 +3019,48 @@ async function loadMyArrestRecords() {
   }
 }
 
+async function loadPolicePromotionProgress() {
+  const status = document.getElementById("promotionStatus");
+
+  if (!status) return;
+
+  status.textContent = "Loading promotion progress...";
+
+  try {
+    const { data, error } = await supabaseClient.rpc(
+      "get_police_promotion_progress"
+    );
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      status.textContent = "No promotion information available.";
+      return;
+    }
+
+    const progress = data[0];
+
+    document.getElementById("promotionCurrentRank").textContent =
+      progress.current_rank;
+
+    document.getElementById("totalPoliceArrests").textContent =
+      progress.total_arrests;
+
+    document.getElementById("nextPoliceRank").textContent =
+      progress.next_rank;
+
+    document.getElementById("arrestsNeeded").textContent =
+      progress.next_rank === "Top Rank Achieved"
+        ? "Congratulations! You have reached the highest rank."
+        : progress.arrests_needed + " more successful arrests needed.";
+
+    status.textContent = "Promotion progress updated.";
+
+  } catch (error) {
+    status.textContent = error.message;
+  }
+}
+
 
 </script>
 </body>
