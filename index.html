@@ -2823,6 +2823,92 @@ async function completePoliceMission(missionId) {
   }
 }
 
+async function loadWantedPlayers() {
+  const list = document.getElementById("wantedPlayersList");
+  const status = document.getElementById("wantedBoardStatus");
+
+  if (!list || !status) return;
+
+  list.textContent = "Loading wanted players...";
+
+  try {
+    const { data, error } = await supabaseClient.rpc(
+      "get_wanted_players"
+    );
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      list.textContent = "No wanted players currently available.";
+      return;
+    }
+
+    list.innerHTML = "";
+
+    data.forEach(player => {
+      const card = document.createElement("div");
+      card.className = "status-panel";
+
+      const name = document.createElement("h3");
+      name.textContent = "🚨 " + player.display_name;
+
+      const city = document.createElement("p");
+      city.textContent = "📍 " + player.city;
+
+      const wanted = document.createElement("p");
+      wanted.textContent = "Wanted Level: " + player.wanted_level + " / 5";
+
+      const button = document.createElement("button");
+      button.textContent = "🚔 Arrest Player";
+
+      button.addEventListener("click", () => {
+        arrestWantedPlayer(player.player_id);
+      });
+
+      card.appendChild(name);
+      card.appendChild(city);
+      card.appendChild(wanted);
+      card.appendChild(button);
+
+      list.appendChild(card);
+    });
+
+    status.textContent = "Wanted Board updated successfully.";
+
+  } catch (error) {
+    list.textContent = "Wanted Board is available only to Police Officers.";
+    status.textContent = error.message;
+  }
+}
+
+
+async function arrestWantedPlayer(playerId) {
+  const status = document.getElementById("wantedBoardStatus");
+
+  if (!confirm("Are you sure you want to arrest this wanted player?")) {
+    return;
+  }
+
+  status.textContent = "Processing arrest...";
+
+  try {
+    const { data, error } = await supabaseClient.rpc(
+      "arrest_wanted_player",
+      { target_player: playerId }
+    );
+
+    if (error) throw error;
+
+    status.textContent = data;
+
+    await refreshProfile();
+    await loadWantedPlayers();
+
+  } catch (error) {
+    status.textContent = error.message;
+  }
+}
+
 </script>
 </body>
 </html>
