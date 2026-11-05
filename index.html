@@ -2929,6 +2929,64 @@ async function arrestWantedPlayer(playerId) {
     status.textContent = error.message;
   }
 }
+  
+async function loadMyArrestRecords() {
+  const list = document.getElementById("arrestRecordsList");
+  const status = document.getElementById("arrestRecordsStatus");
+  const total = document.getElementById("arrestTotal");
+
+  if (!list || !status || !total) return;
+
+  list.textContent = "Loading arrest records...";
+
+  try {
+    const { data, error } = await supabaseClient.rpc(
+      "get_my_arrest_records"
+    );
+
+    if (error) throw error;
+
+    total.textContent = data ? data.length : 0;
+
+    if (!data || data.length === 0) {
+      list.textContent = "No arrest records yet.";
+      status.textContent = "";
+      return;
+    }
+
+    list.innerHTML = "";
+
+    data.forEach(record => {
+      const card = document.createElement("div");
+      card.className = "status-panel";
+
+      const title = document.createElement("h3");
+      title.textContent = "🚔 " + record.arrested_player_name;
+
+      const details = document.createElement("p");
+      details.textContent =
+        "In-game Day " + record.arrest_day +
+        " | Sentence: " + record.sentence_days + " days";
+
+      const date = document.createElement("p");
+      date.textContent =
+        "Recorded: " + new Date(record.arrest_date).toLocaleString();
+
+      card.appendChild(title);
+      card.appendChild(details);
+      card.appendChild(date);
+
+      list.appendChild(card);
+    });
+
+    status.textContent = "Your arrest history is up to date.";
+
+  } catch (error) {
+    list.textContent = "Arrest records are available only to Police Officers.";
+    status.textContent = error.message;
+  }
+}
+
 
 </script>
 </body>
