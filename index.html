@@ -2718,6 +2718,92 @@ function updatePrisonStatus() {
   }
 }
 
+async function loadPoliceMissions() {
+  const list = document.getElementById("policeMissionList");
+  const status = document.getElementById("policeMissionStatus");
+
+  if (!list || !status) return;
+
+  list.textContent = "Loading police missions...";
+
+  try {
+    const { data, error } = await supabaseClient.rpc("get_police_missions");
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      list.textContent = "No police missions available today.";
+      return;
+    }
+
+    list.innerHTML = "";
+
+    data.forEach(mission => {
+      const card = document.createElement("div");
+      card.className = "status-panel";
+
+      const title = document.createElement("h3");
+      title.textContent = "🚔 " + mission.mission_name;
+
+      const description = document.createElement("p");
+      description.textContent = mission.description;
+
+      const rewards = document.createElement("p");
+      rewards.textContent =
+        "💰 ₦" + Number(mission.reward_cash).toLocaleString() +
+        " | ⭐ " + mission.reward_xp + " XP" +
+        " | 🏆 " + mission.reward_reputation + " Reputation";
+
+      const button = document.createElement("button");
+      button.textContent = mission.claimed_at
+        ? "Completed"
+        : "Complete & Collect Reward";
+
+      button.disabled = Boolean(mission.claimed_at);
+
+      button.addEventListener("click", () => {
+        completePoliceMission(mission.player_mission_id);
+      });
+
+      card.appendChild(title);
+      card.appendChild(description);
+      card.appendChild(rewards);
+      card.appendChild(button);
+
+      list.appendChild(card);
+    });
+
+    status.textContent = "Your daily police missions are ready.";
+
+  } catch (error) {
+    list.textContent = "Police missions are available only to Police Officers.";
+    status.textContent = error.message;
+  }
+}
+
+
+async function completePoliceMission(missionId) {
+  const status = document.getElementById("policeMissionStatus");
+
+  status.textContent = "Processing mission reward...";
+
+  try {
+    const { data, error } = await supabaseClient.rpc(
+      "complete_police_mission",
+      { selected_player_mission_id: missionId }
+    );
+
+    if (error) throw error;
+
+    status.textContent = data;
+
+    await refreshProfile();
+    await loadPoliceMissions();
+
+  } catch (error) {
+    status.textContent = error.message;
+  }
+}
 
 </script>
 </body>
