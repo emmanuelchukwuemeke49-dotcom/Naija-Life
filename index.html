@@ -734,6 +734,7 @@ async function refreshProfile() {
   bankBalance = Number(profile.bank_balance ?? 0);
   xp = Number(profile.xp ?? 0);
 playerLevel = Number(profile.player_level ?? 1);
+policeRank = profile.police_rank || "Not a Police Officer";
   wantedLevel = Number(profile.wanted_level ?? 0);
   jailUntilDay = Number(profile.jail_until_day ?? 0);
 
